@@ -1,0 +1,184 @@
+import { API_BASE_URL, STATUS_CODES } from './constants';
+
+/**
+ * API 요청을 위한 기본 설정
+ */
+const defaultHeaders = {
+  'Content-Type': 'application/json',
+};
+
+/**
+ * API 요청을 처리하는 기본 함수
+ * @param {string} endpoint - API 엔드포인트
+ * @param {Object} options - fetch 옵션
+ * @returns {Promise} API 응답
+ */
+async function apiRequest(endpoint, options = {}) {
+  const url = `${API_BASE_URL}${endpoint}`;
+
+  const config = {
+    headers: defaultHeaders,
+    ...options,
+  };
+
+  // FormData인 경우 Content-Type을 자동으로 설정하도록 헤더 제거
+  if (options.body instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+
+  // 인증 토큰이 있다면 헤더에 추가
+  const token = localStorage.getItem('auth_token');
+  console.log('인증 토큰 확인:', token);
+  console.log('현재 요청 URL:', url);
+  console.log('요청 헤더:', config.headers);
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    console.warn('인증 토큰이 없습니다. 백엔드에서 인증을 요구할 수 있습니다.');
+  }
+
+  try {
+    const response = await fetch(url, config);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // 응답이 JSON이 아닐 수 있으므로 확인
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      return data;
+    } else {
+      return response;
+    }
+  } catch (error) {
+    console.error('API request failed:', error);
+    throw error;
+  }
+}
+
+/**
+ * GET 요청
+ * @param {string} endpoint - API 엔드포인트
+ * @returns {Promise} API 응답
+ */
+export function apiGet(endpoint) {
+  return apiRequest(endpoint, {
+    method: 'GET',
+  });
+}
+
+/**
+ * POST 요청
+ * @param {string} endpoint - API 엔드포인트
+ * @param {Object} data - 전송할 데이터
+ * @returns {Promise} API 응답
+ */
+export function apiPost(endpoint, data) {
+  return apiRequest(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+/**
+ * PUT 요청
+ * @param {string} endpoint - API 엔드포인트
+ * @param {Object} data - 전송할 데이터
+ * @returns {Promise} API 응답
+ */
+export function apiPut(endpoint, data) {
+  return apiRequest(endpoint, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+/**
+ * DELETE 요청
+ * @param {string} endpoint - API 엔드포인트
+ * @returns {Promise} API 응답
+ */
+export function apiDelete(endpoint) {
+  return apiRequest(endpoint, {
+    method: 'DELETE',
+  });
+}
+
+// 특정 API 엔드포인트들
+export const authAPI = {
+  login: (credentials) => apiPost('/auth/login', credentials),
+  logout: () => apiPost('/auth/logout'),
+  register: (userData) => apiPost('/auth/register', userData),
+  getProfile: () => apiGet('/user/me'),
+};
+
+export const dashboardAPI = {
+  getStats: () => apiGet('/dashboard/stats'),
+  getRecentActivity: () => apiGet('/dashboard/activity'),
+};
+
+export const usersAPI = {
+  getUsers: () => apiGet('/user'),
+  getUser: (id) => apiGet(`/user/${id}`),
+  createUser: (userData) => apiPost('/user', userData),
+  updateUser: (id, userData) => apiPut(`/user/${id}`, userData),
+  deleteUser: (id) => apiDelete(`/user/${id}`),
+  getCustomhistorylist: (id) => apiGet(`/api/custom/list/${id}`),
+  getUsersDog: (id) => apiGet(`/api/dog/${id}`)
+};
+
+export const dogsAPI = {
+  getDogs: () => apiGet('/api/dog'),
+  getDog: (id) => apiGet(`/api/dog/${id}`),
+  createDog: (dogData) => apiPost('/dog', dogData),
+  updateDog: (id, dogData) => apiPut(`/dog/${id}`, dogData),
+  deleteDog: (id) => apiDelete(`/dog/${id}`),
+};
+
+export const customsAPI = {
+  getCustoms: () => apiGet('/api/custom'),
+  getCustom: (id) => apiGet(`/api/custom/${id}`),
+  updateCustomStatusInProgress: (id, data) => apiPut(`/api/custom/${id}/in-progress`, data), // 진행중
+  updateCustomStatusHold: (id, data) => apiPut(`/api/custom/${id}/hold`, data), // 보류(*보류사유)
+  updateCustomStatusCompleted: (id, formData) => apiRequest(`${API_BASE_URL}/api/custom/${id}/completed`, { method: 'PUT', body: formData }), // 완료(모델넣어줘야됨)
+  updateCustomStatusCanceled: (id, data) => apiPut(`/api/custom/${id}/canceled`, data), // 취소(관리자id 받아야됨)
+};
+
+export const noticeAPI = {
+  getNotices: ({ status = "PUBLISHED" } = {}) => apiGet(`/api/notice?status=${status}`),
+  getNotice: (id) => apiGet(`/api/notice/${id}`),
+  createNotice: async ({ category, title, content, images }) => {
+    const formData = new FormData();
+    const requestDto = JSON.stringify({ category, title, content });
+    formData.append('requestDto', new Blob([requestDto], { type: 'application/json' }));
+    if (images && images.length > 0) {
+      images.forEach((file) => formData.append('images', file));
+    }
+    return apiRequest('/api/notice/create', {
+      method: 'POST',
+      body: formData,
+    });
+  },
+  updateNotice: async ({ id, category, title, content, deleteImageIds, newImages }) => {
+    const formData = new FormData();
+    const requestDto = JSON.stringify({ category, title, content, deleteImageIds });
+    formData.append('requestDto', new Blob([requestDto], { type: 'application/json' }));
+    if (newImages && newImages.length > 0) {
+      newImages.forEach((file) => formData.append('newImages', file));
+    }
+    return apiRequest(`/api/notice/${id}/post`, {
+      method: 'PATCH',
+      body: formData,
+    });
+  },
+  deleteNotice: (id) => apiRequest(`/api/notice/${id}/status`, { method: 'PATCH' }),
+};
+
+export const inquiryAPI = {
+  getInquiries: () => apiGet('/api/inquiry'),
+  getInquiry: (id) => apiGet(`/api/inquiry/${id}`),
+  createAnswer: (inquiryId, answerContent) => apiPost(`/api/inquiry/${inquiryId}/answer`, { comment: answerContent }),
+};

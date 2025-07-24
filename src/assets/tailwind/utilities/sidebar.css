@@ -1,0 +1,121 @@
+.simplebar-scrollbar:before {
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+.left-sidebar .scroll-sidebar {
+    height: calc(100vh - 240px);
+}
+
+
+#sidebarnav .sidebar-item .sidebar-link::before{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -16px;
+    content: "";
+    width: 0;
+    height: 100%;
+    z-index: -1;
+    border-radius: 0px 24px 24px 0px;
+    transition: all 0.4s ease-in-out;
+    background-color: #e5f3fb;
+}
+#sidebarnav .sidebar-item .sidebar-link:hover:before{
+    width: calc(100% + 16px);
+}
+
+#sidebarnav .sidebar-item .sidebar-link.active:before{
+    width: calc(100% + 16px);
+}
+#sidebarnav .sidebar-item .sidebar-link.active{
+    color: #006aaf;
+}
+#sidebarnav .sidebar-item .sidebar-link:hover{
+    color: #006aaf;   
+}
+
+.page-wrapper{
+    margin-left: 270px;
+}
+
+@media (max-width: 1280px) {
+    .page-wrapper{
+        margin-left: 0px;
+    }
+
+}
+
+/* 사이드바 접기/펼치기 스타일 */
+.sidebar-collapsed {
+    width: 70px !important;
+    transition: width 0.3s ease;
+}
+
+.sidebar-collapsed .sidebar-nav span:not(.sidebar-toggle-icon),
+.sidebar-collapsed .nav-small-cap,
+.sidebar-collapsed .hs-accordion-content,
+.sidebar-collapsed .sidebar-nav .mr-5,
+.sidebar-collapsed .sidebar-nav .justify-between {
+    display: none !important;
+}
+
+.sidebar-collapsed .sidebar-nav i {
+    margin-right: 0;
+    font-size: 1.5rem;
+}
+
+.sidebar-collapsed-main {
+    padding-left: 90px !important;
+}
+
+.sidebar-toggle-btn {
+    position: absolute;
+    right: -12px;
+    top: 20px;
+    background-color: #1b0a5c;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+/* 관리자 인증 버튼 스타일 */
+.admin-auth-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.admin-login-btn {
+    background-color: #1b0a5c;
+    color: white;
+}
+
+.admin-login-btn:hover {
+    background-color: #0f0533;
+}
+
+.admin-register-btn {
+    border: 1px solid #1b0a5c;
+    color: #1b0a5c;
+}
+
+.admin-register-btn:hover {
+    background-color: #1b0a5c;
+    color: white;
+}
+
+.admin-logout-btn {
+    background-color: #dc2626;
+    color: white;
+}
+
+.admin-logout-btn:hover {
+    background-color: #b91c1c;
+}
