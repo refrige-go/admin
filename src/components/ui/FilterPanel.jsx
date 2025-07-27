@@ -10,17 +10,42 @@ import { Search } from "lucide-react"
  * @param {Function} props.onChange - 필터 변경 핸들러
  * @param {Array} props.checkboxes - 체크박스 필터들
  */
-export default function FilterPanel({ filters, values, onChange, checkboxes = [] }) {
+export default function FilterPanel({ 
+  searchTerm,
+  onSearchChange,
+  searchPlaceholder, 
+  filters = [],
+  values, onChange, checkboxes = [] 
+}) {
   const handleInputChange = (key, value) => {
-    onChange({ ...values, [key]: value })
+    if (onChange) {
+      onChange({ ...values, [key]: value })
+    } else if (key === 'search' && onSearchChange) {
+      onSearchChange(value)
+    }
   }
 
   const handleCheckboxChange = (key, checked) => {
-    onChange({ ...values, [key]: checked })
+    if (onChange) {
+      onChange({ ...values, [key]: checked })
+    }
   }
 
   return (
     <div className="space-y-4 mb-6">
+      {/* Search Input */}
+      {searchTerm !== undefined && (
+        <div className="relative">
+          <input 
+            placeholder={searchPlaceholder || "검색..."}
+            value={searchTerm || ''}
+            onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+            className="w-full pr-10 px-3 py-2 border border-[#dfe1e3] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+          />
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#bfc5c8]" />
+        </div>
+      )}
+
       {/* Main Filters */}
       <div className="grid grid-cols-5 gap-4">
         {filters.map((filter, index) => (

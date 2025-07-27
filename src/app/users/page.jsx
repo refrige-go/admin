@@ -3,12 +3,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { DataTable } from "@/components/ui";
 import { useRouter } from "next/navigation";
-import { applyFilters } from "@/hooks/applyFilters";
 import StatusButton from "@/components/ui/StatusButton";
 import styles from "@/assets/css/UserPage.module.css";
-import { usersAPI } from "@/lib/api";
 import UserFilters from "@/components/ui/UserFilters";
-import { Pagination } from "@/components/features/Pagination";
 import PageContainer from "@/components/ui/PageContainer";
 
 export default function UsersPage() {
@@ -16,11 +13,10 @@ export default function UsersPage() {
 
   const [roleFilter, setRoleFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [genderFilter, setGenderFilter] = useState("ALL");
   const [joinDateSort, setJoinDateSort] = useState("latest");
   const [deleteDateSort, setDeleteDateSort] = useState("latest");
 
-  const [searchField, setSearchField] = useState("email");
+  const [searchField, setSearchField] = useState("username");
   const [searchKeyword, setSearchKeyword] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,8 +31,16 @@ export default function UsersPage() {
       try {
         setIsLoading(true);
         setError(null);
-        const users = await usersAPI.getUsers();
-        console.log(users);
+        
+        //백엔드 API 호출
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const users = await response.json();
+        console.log('백엔드에서 받은 데이터:', users);
         setMemberData(users || []);
       } catch (err) {
         console.error("사용자 데이터 로드 실패:", err);
@@ -50,35 +54,66 @@ export default function UsersPage() {
   }, []);
 
   const filteredData = useMemo(() => {
-    const filterState = {
-      role: roleFilter === "ALL" ? "" : roleFilter,
-      status: statusFilter === "ALL" ? "" : statusFilter,
-      gender: genderFilter === "ALL" ? "" : genderFilter,
-    };
+    let filtered = [...memberData];
 
-    let filtered = applyFilters(memberData, filterState);
+    // 권한 필터링
+    if (roleFilter !== "ALL") {
+      filtered = filtered.filter(user => user.role === roleFilter);
+    }
 
+    // 상태 필터링 (deleted 필드 기반)
+    if (statusFilter !== "ALL") {
+      if (statusFilter === "ACTIVE") {
+        filtered = filtered.filter(user => !user.deleted);
+      } else if (statusFilter === "WITHDRAWN") {
+        filtered = filtered.filter(user => user.deleted);
+      }
+    }
+
+    // 검색 필터링
     if (searchKeyword) {
-      filtered = filtered.filter(item => {
-        const value = item[searchField]?.toLowerCase() || "";
-        return value.includes(searchKeyword.toLowerCase());
+      filtered = filtered.filter(user => {
+        let searchValue = "";
+        
+        if (searchField === "username") {
+          // 아이디 검색 - username 필드 사용
+          searchValue = user.username?.toString().toLowerCase() || "";
+        } else if (searchField === "nickname") {
+          // 닉네임 검색 - nickname 필드 사용
+          searchValue = user.nickname?.toString().toLowerCase() || "";
+        }
+        
+        return searchValue.includes(searchKeyword.toLowerCase());
       });
     }
 
+    // 정렬 로직 개선
     const sorted = [...filtered].sort((a, b) => {
-    const joinCompare = joinDateSort === "latest"
-      ? (b.createdAt || "").localeCompare(a.createdAt || "")
-      : (a.createdAt || "").localeCompare(b.createdAt || "");
+      // 탈퇴 상태일 때는 삭제일을 우선 정렬
+      if (statusFilter === "WITHDRAWN") {
+        const aDeletedAt = a.deletedAt ? new Date(a.deletedAt).getTime() : 0;
+        const bDeletedAt = b.deletedAt ? new Date(b.deletedAt).getTime() : 0;
+        
+        if (deleteDateSort === "latest") {
+          return bDeletedAt - aDeletedAt;
+        } else {
+          return aDeletedAt - bDeletedAt;
+        }
+      }
+      
+      // 일반 상태일 때는 가입일 정렬
+      const aCreatedAt = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bCreatedAt = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      
+      if (joinDateSort === "latest") {
+        return bCreatedAt - aCreatedAt;
+      } else {
+        return aCreatedAt - bCreatedAt;
+      }
+    });
 
-    const deleteCompare = deleteDateSort === "latest"
-      ? (b.deletedAt || "").localeCompare(a.deletedAt || "")
-      : (a.deletedAt || "").localeCompare(b.deletedAt || "");
-
-    return joinCompare || deleteCompare;
-  });
-
-  return sorted;
-  }, [memberData, roleFilter, statusFilter, genderFilter, joinDateSort, deleteDateSort, searchField, searchKeyword]);
+    return sorted;
+  }, [memberData, roleFilter, statusFilter, joinDateSort, deleteDateSort, searchField, searchKeyword]);
   
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -87,24 +122,30 @@ export default function UsersPage() {
     router.push(`/users/${row.id}`);
   };
 
+  // 권한 표시 함수
+  const getRoleLabel = (role) => {
+    console.log('권한 값:', role); // 디버깅용
+    if (role === 'ROLE_ADMIN' || role === 'ADMIN') {
+      return '관리자';
+    } else if (role === 'ROLE_USER' || role === 'USER') {
+      return '회원';
+    }
+    return '회원';
+  };
+
   const columns = [
-    { header: "ID", key: "id" },
+    { header: "번호", key: "id" },
     { header: "닉네임", key: "nickname" },
-    { header: "이메일", key: "email" },
+    { header: "아이디", key: "username" },
     {
       header: "권한",
       key: "role",
-      render: (v) => <StatusButton label={v === 'ADMIN' ? '관리자' : '회원'} type="role" status={v} />,
+      render: (v) => <StatusButton label={getRoleLabel(v)} type="role" status={v} />,
     },
     {
       header: "상태",
-      key: "status",
-      render: (v) => <StatusButton label={v === 'ACTIVE' ? '정상' : v === 'SUSPENDED' ? '차단' : '탈퇴'} type="userStatus" status={v} />,
-    },
-    {
-      header: "성별",
-      key: "gender",
-      render: (v) => v === "F" ? "여" : "남",
+      key: "deleted",
+       render: (v) => <StatusButton label={v ? '탈퇴' : '정상'} type="userStatus" status={v ? 'WITHDRAWN' : 'ACTIVE'} />,
     },
     {
       header: "가입일",
@@ -155,8 +196,6 @@ export default function UsersPage() {
         onRoleFilterChange={setRoleFilter}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
-        genderFilter={genderFilter}
-        onGenderFilterChange={setGenderFilter}
         joinDateSort={joinDateSort}
         onJoinDateSortChange={setJoinDateSort}
         deleteDateSort={deleteDateSort}

@@ -5,7 +5,7 @@ import styles from "@/assets/css/UserPage.module.css";
 /**
  * 회원관리 필터 컴포넌트 (검색 + 필터)
  * @param {Object} props
- * @param {string} props.searchField - 검색 필드값 (예: 'email')
+ * @param {string} props.searchField - 검색 필드값 (예: 'username')
  * @param {string} props.searchKeyword - 검색어
  * @param {Function} props.onSearchFieldChange - 검색 필드 변경 핸들러
  * @param {Function} props.onSearchKeywordChange - 검색어 변경 핸들러
@@ -22,7 +22,7 @@ import styles from "@/assets/css/UserPage.module.css";
  * @returns {JSX.Element}
  */
 export default function UserFilters({
-  searchField = "email",
+  searchField = "username",
   searchKeyword = "",
   onSearchFieldChange = () => {},
   onSearchKeywordChange = () => {},
@@ -30,8 +30,6 @@ export default function UserFilters({
   onRoleFilterChange = () => {},
   statusFilter = "ALL",
   onStatusFilterChange = () => {},
-  genderFilter = "ALL",
-  onGenderFilterChange = () => {},
   joinDateSort = "latest",
   onJoinDateSortChange = () => {},
   deleteDateSort = "latest",
@@ -40,7 +38,6 @@ export default function UserFilters({
   const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
-  const [isGenderDropdownOpen, setIsGenderDropdownOpen] = useState(false);
   const [isJoinDateDropdownOpen, setIsJoinDateDropdownOpen] = useState(false);
   const [isDeleteDateDropdownOpen, setIsDeleteDateDropdownOpen] = useState(false);
 
@@ -54,10 +51,6 @@ export default function UserFilters({
 
   const handleStatusDropdownToggle = () => {
     setIsStatusDropdownOpen(prev => !prev);
-  };
-
-  const handleGenderDropdownToggle = () => {
-    setIsGenderDropdownOpen(prev => !prev);
   };
 
   const handleJoinDateDropdownToggle = () => {
@@ -83,11 +76,6 @@ export default function UserFilters({
     setIsStatusDropdownOpen(false);
   };
 
-  const handleGenderSelect = (gender) => {
-    onGenderFilterChange(gender);
-    setIsGenderDropdownOpen(false);
-  };
-
   const handleJoinDateSelect = (sort) => {
     onJoinDateSortChange(sort);
     setIsJoinDateDropdownOpen(false);
@@ -97,6 +85,9 @@ export default function UserFilters({
     onDeleteDateSortChange(sort);
     setIsDeleteDateDropdownOpen(false);
   };
+  
+  //삭제일 정렬 버튼 활성화 : 탈퇴 상태일 경우에만
+  const isDeleteDateSortEnabled = statusFilter === "WITHDRAWN";
 
   return (
     <div className={styles.usersSearchArea}>
@@ -108,7 +99,7 @@ export default function UserFilters({
           style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #ddd', minWidth: 120, minHeight: 42 }}
           onClick={handleSearchDropdownToggle}
         >
-          {searchField === 'email' ? '이메일' : '닉네임'}
+          {searchField === 'username' ? '아이디' : '닉네임'}
           <ChevronDown className="w-4 h-4 text-[#777]" />
         </button>
 
@@ -116,8 +107,8 @@ export default function UserFilters({
           <ul className="absolute z-10 mt-1 w-full border border-[#ddd] rounded bg-white text-sm shadow">
             <li
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => handleFieldSelect('email')}
-            >이메일</li>
+              onClick={() => handleFieldSelect('username')}
+            >아이디</li>
             <li
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
               onClick={() => handleFieldSelect('nickname')}
@@ -129,7 +120,7 @@ export default function UserFilters({
       {/* 검색어 입력 */}
       <input
         type="text"
-        placeholder={`검색어(${searchField === 'email' ? '이메일' : '닉네임'})`}
+        placeholder={`검색어(${searchField === 'username' ? '아이디' : '닉네임'})`}
         className={styles.usersSearchInput}
         value={searchKeyword}
         onChange={(e) => onSearchKeywordChange(e.target.value)}
@@ -143,7 +134,7 @@ export default function UserFilters({
           style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #ddd', minWidth: 120, minHeight: 42 }}
           onClick={handleRoleDropdownToggle}
         >
-          {roleFilter === "ALL" ? "권한: 모두" : roleFilter === "USER" ? "권한: 회원" : "권한: 관리자"}
+          {roleFilter === "ALL" ? "권한: 모두" : roleFilter === "ROLE_USER" ? "권한: 회원" : "권한: 관리자"}
           <ChevronDown className="w-4 h-4 text-[#777]" />
         </button>
 
@@ -155,11 +146,11 @@ export default function UserFilters({
             >모두</li>
             <li
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => handleRoleSelect('USER')}
+              onClick={() => handleRoleSelect('ROLE_USER')}
             >회원</li>
             <li
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => handleRoleSelect('ADMIN')}
+              onClick={() => handleRoleSelect('ROLE_ADMIN')}
             >관리자</li>
           </ul>
         )}
@@ -173,7 +164,7 @@ export default function UserFilters({
           style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #ddd', minWidth: 120, minHeight: 42 }}
           onClick={handleStatusDropdownToggle}
         >
-          {statusFilter === "ALL" ? "상태: 모두" : statusFilter === "ACTIVE" ? "상태: 정상" : statusFilter === "SUSPENDED" ? "상태: 차단" : "상태: 탈퇴"}
+          {statusFilter === "ALL" ? "상태: 모두" : statusFilter === "ACTIVE" ? "상태: 정상" : "상태: 탈퇴"}
           <ChevronDown className="w-4 h-4 text-[#777]" />
         </button>
 
@@ -189,18 +180,15 @@ export default function UserFilters({
             >정상</li>
             <li
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => handleStatusSelect('SUSPENDED')}
-            >차단</li>
-            <li
-              className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
               onClick={() => handleStatusSelect('WITHDRAWN')}
             >탈퇴</li>
           </ul>
         )}
       </div>
 
-      {/* 성별 필터 */}
-      <div className="relative">
+      
+      {/* 성별 필터 - 아직 없음 */}
+      {/* <div className="relative">
         <button
           type="button"
           className="flex items-center gap-2 border border-[#ddd] rounded px-3 py-2 text-sm bg-white hover:bg-gray-50"
@@ -227,7 +215,7 @@ export default function UserFilters({
             >남</li>
           </ul>
         )}
-      </div>
+      </div> */}
 
       {/* 가입일 정렬 */}
       <div className="relative">
@@ -255,19 +243,24 @@ export default function UserFilters({
         )}
       </div>
 
-      {/* 삭제일 정렬 */}
+      {/* 삭제일 정렬 - 탈퇴 상태를 고른 경우에만 */}
       <div className="relative">
         <button
           type="button"
-          className="flex items-center gap-2 border border-[#ddd] rounded px-3 py-2 text-sm bg-white hover:bg-gray-50"
-          style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #ddd', minWidth: 120, minHeight: 42 }}
-          onClick={handleDeleteDateDropdownToggle}
+          className={`flex items-center gap-2 border rounded px-3 py-2 text-sm transition-colors ${
+            isDeleteDateSortEnabled
+              ? 'border-[#ddd] bg-white hover:bg-gray-50 cursor-pointer'
+              : 'border-[#e5e7eb] bg-gray-100 text-gray-400 cursor-not-allowed'
+          }`}
+          style={{ padding: '6px 12px', borderRadius: 6, minWidth: 120, minHeight: 42 }}
+          onClick={isDeleteDateSortEnabled ? handleDeleteDateDropdownToggle : undefined}
+          disabled={!isDeleteDateSortEnabled}
         >
           {deleteDateSort === "latest" ? "삭제일: 최신순" : "삭제일: 오래된순"}
-          <ChevronDown className="w-4 h-4 text-[#777]" />
+          <ChevronDown className={`w-4 h-4 ${isDeleteDateSortEnabled ? 'text-[#777]' : 'text-gray-400'}`} />
         </button>
 
-        {isDeleteDateDropdownOpen && (
+        {isDeleteDateSortEnabled && isDeleteDateDropdownOpen && (
           <ul className="absolute z-10 mt-1 w-full border border-[#ddd] rounded bg-white text-sm shadow">
             <li
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer"

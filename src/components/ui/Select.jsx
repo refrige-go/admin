@@ -16,6 +16,7 @@ export function Select({
   value,
   onChange,
   disabled = false,
+  options,
   ...props
 }) {
   const selectClasses = classNames(
@@ -34,7 +35,15 @@ export function Select({
       className={selectClasses}
       {...props}
     >
-      {children}
+      {options ? (
+        options.map((option, index) => (
+          <option key={index} value={option.value}>
+            {option.label}
+          </option>
+        ))
+      ) : (
+        children
+      )}
     </select>
   );
-} 
+}

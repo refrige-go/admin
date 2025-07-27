@@ -182,3 +182,39 @@ export const inquiryAPI = {
   getInquiry: (id) => apiGet(`/api/inquiry/${id}`),
   createAnswer: (inquiryId, answerContent) => apiPost(`/api/inquiry/${inquiryId}/answer`, { comment: answerContent }),
 };
+
+//식재료 관리 API
+export const ingredientsAPI = {
+  // 전체 식재료 조회 (기존 API 활용)
+  getIngredients: (category = null) => {
+    const url = category 
+      ? `/api/ingredients?category=${category}` 
+      : `/api/ingredients`;
+    return apiGet(url);
+  },
+
+  // 특정 식재료 조회
+  getIngredient: (id) => {
+    return apiGet(`/api/ingredients/${id}`);  
+  },
+
+  // 식재료 등록
+  createIngredient: (data) => {
+    return apiPost(`/api/ingredients`, data);  
+  },
+
+  // 식재료 수정
+  updateIngredient: (id, data) => {
+    return apiPut(`/api/ingredients/${id}`, data);  
+  },
+
+  // 식재료 삭제
+  deleteIngredient: (id) => {
+    return apiDelete(`/api/ingredients/${id}`); 
+  },
+
+  // 카테고리 목록 조회
+  getCategories: () => {
+    return apiGet(`/api/ingredients/categories`);  
+  }
+};

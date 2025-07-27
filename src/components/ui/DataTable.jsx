@@ -14,7 +14,9 @@ import React, { useState } from "react"
  */
 export default function DataTable({ 
   columns, 
-  data, 
+  data,
+  renderRow, 
+  searchTerm, 
   onRowAction,
   loadingText = "데이터를 불러오는 중...",
   errorText = "에러가 발생했습니다.",
@@ -41,7 +43,7 @@ export default function DataTable({
           <tr className="bg-[#fcfcfc]">
             {columns.map((column, idx) => (
               <th key={idx} className="text-[#1d1b20] font-semibold py-3 px-4 text-left align-middle">
-                {column.header}
+                {column.label || column.header} {/* label 또는 header 지원 */}
               </th>
             ))}
             <th className="py-3 px-4"></th>
@@ -61,27 +63,32 @@ export default function DataTable({
               <td colSpan={columns.length + 1} className="text-center py-8">조건에 맞는 데이터가 없습니다.</td>
             </tr>
           ) : (
-            pagedData.map((row, rowIdx) => (
-              <tr key={row.id || rowIdx} className="hover:bg-[#fcfcfc] border-b border-[#dfe1e3]">
-                {columns.map((column, colIdx) => (
-                  <td key={colIdx} className="py-3 px-4 text-[#000000] align-middle">
-                    {column.render ? column.render(row[column.key], row) : row[column.key]}
+            pagedData.map((row, rowIdx) => {
+              // renderRow 함수가 있으면 사용, 없으면 기본 렌더링
+              const renderedRow = renderRow ? renderRow(row) : row;
+              
+              return (
+                <tr key={row.id || rowIdx} className="hover:bg-[#fcfcfc] border-b border-[#dfe1e3]">
+                  {columns.map((column, colIdx) => (
+                    <td key={colIdx} className="py-3 px-4 text-[#000000] align-middle">
+                      {column.render ? column.render(renderedRow[column.key], renderedRow) : renderedRow[column.key]}
+                    </td>
+                  ))}
+                  <td className="py-3 px-4">
+                    <button
+                      onClick={() => onRowAction && onRowAction(row)}
+                      className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                      title="자세히"
+                    >
+                      <Search className="w-4 h-4 text-[#404040]" />
+                    </button>
                   </td>
-                ))}
-                <td className="py-3 px-4">
-                  <button
-                    onClick={() => onRowAction && onRowAction(row)}
-                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
-                    title="자세히"
-                  >
-                    <Search className="w-4 h-4 text-[#404040]" />
-                  </button>
-                </td>
-              </tr>
-            ))
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>
     </div>
   )
-} 
+}

@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { Package } from 'lucide-react';
+import { usePathname } from 'next/navigation'
 import {
   Home,
   Users,
-  Dog,
-  UserCheck,
-  MessageSquare,
+  Carrot,
+  BarChart3,
   HelpCircle,
   Megaphone,
   ChevronLeft,
@@ -18,28 +19,57 @@ import {
 import { classNames } from '../lib/utils'
 
 /**
- * 사이드바 컴포넌트 (TogeDaeng 스타일)
+ * 사이드바 컴포넌트
  * @param {Object} props - 컴포넌트 props
  * @param {boolean} props.isOpen - 사이드바 열림 상태 (모바일)
  * @param {Function} props.onClose - 사이드바 닫기 핸들러
  * @returns {JSX.Element} Sidebar 컴포넌트
  */
 function Sidebar({ isOpen = false, onClose = () => { } }) {
-  const [selectedNav, setSelectedNav] = useState('회원관리')
   const [collapsed, setCollapsed] = useState(false)
+  const pathname = usePathname()
 
   const navItems = [
     { icon: Home, label: "대시보드", key: "dashboard", href: "/" },
     { icon: Users, label: "회원 관리", key: "회원관리", href: "/users" },
-    { icon: Dog, label: "반려견 정보", key: "반려견 정보", href: "/dogs" },
-    { icon: ListTodo, label: "커스텀 요청", key: "커스텀 요청", href: "/customs" },
+    { icon: Package, label: "식재료 관리", key: "ingredient", href: "/ingredients" },
+    { icon: BarChart3, label: "통계/분석", key: "analytics", href: "/analytics" },
     { icon: HelpCircle, label: "문의사항", key: "inquiry", href: "/inquiry" },
     { icon: Megaphone, label: "공지사항", key: "notice", href: "/notice" },
   ]
 
+  const getSelectedNav = () => {
+    console.log('현재 경로:', pathname); // 디버깅용
+    if (pathname === '/' || pathname === '') {
+      return 'dashboard';
+    }
+    if (pathname.startsWith('/users')) {
+      return '회원관리';
+    }
+    if (pathname.startsWith('/ingredients')) {
+      return 'ingredient';
+    }
+    if (pathname.startsWith('/analytics')) {
+      return 'analytics';
+    }
+    if (pathname.startsWith('/inquiry')) {
+      return 'inquiry';
+    }
+    if (pathname.startsWith('/notice')) {
+      return 'notice';
+    }
+
+
+    return 'dashboard' // 기본값
+  }  
+
   const toggleSidebar = () => {
     setCollapsed(!collapsed)
   }
+
+  // 현재 선택된 네비게이션 항목
+  const selectedNav = getSelectedNav();
+  console.log('선택된 네비게이션:', selectedNav); // 디버깅용
 
   return (
     <>
@@ -93,7 +123,7 @@ function Sidebar({ isOpen = false, onClose = () => { } }) {
           <nav className="space-y-2">
             {navItems.map((item) => {
               const IconComponent = item.icon
-              const isActive = selectedNav === item.key
+              const isActive = getSelectedNav === item.key
 
               return (
                 <Link

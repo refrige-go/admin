@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useRouter } from "next/navigation";
 
 /**
- * 애플리케이션 헤더 컴포넌트 (TogeDaeng 스타일)
+ * 애플리케이션 헤더 컴포넌트
  * @param {Object} props - 컴포넌트 props
  * @param {Function} props.onMenuClick - 메뉴 클릭 핸들러
  * @returns {JSX.Element} Header 컴포넌트
@@ -25,7 +25,7 @@ function Header({ onMenuClick }) {
 
   return (
     <header className="bg-[#190a49] text-white px-6 py-4 flex items-center justify-between">
-      <h1 className="text-xl font-semibold">TogeDaeng Admin Page</h1>
+      <h1 className="text-xl font-semibold">Refrige-go Admin Page</h1>
       
       <div className="flex items-center gap-4">
         {/* 알림 */}
