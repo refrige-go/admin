@@ -126,25 +126,6 @@ export const usersAPI = {
   createUser: (userData) => apiPost('/user', userData),
   updateUser: (id, userData) => apiPut(`/user/${id}`, userData),
   deleteUser: (id) => apiDelete(`/user/${id}`),
-  getCustomhistorylist: (id) => apiGet(`/api/custom/list/${id}`),
-  getUsersDog: (id) => apiGet(`/api/dog/${id}`)
-};
-
-export const dogsAPI = {
-  getDogs: () => apiGet('/api/dog'),
-  getDog: (id) => apiGet(`/api/dog/${id}`),
-  createDog: (dogData) => apiPost('/dog', dogData),
-  updateDog: (id, dogData) => apiPut(`/dog/${id}`, dogData),
-  deleteDog: (id) => apiDelete(`/dog/${id}`),
-};
-
-export const customsAPI = {
-  getCustoms: () => apiGet('/api/custom'),
-  getCustom: (id) => apiGet(`/api/custom/${id}`),
-  updateCustomStatusInProgress: (id, data) => apiPut(`/api/custom/${id}/in-progress`, data), // 진행중
-  updateCustomStatusHold: (id, data) => apiPut(`/api/custom/${id}/hold`, data), // 보류(*보류사유)
-  updateCustomStatusCompleted: (id, formData) => apiRequest(`${API_BASE_URL}/api/custom/${id}/completed`, { method: 'PUT', body: formData }), // 완료(모델넣어줘야됨)
-  updateCustomStatusCanceled: (id, data) => apiPut(`/api/custom/${id}/canceled`, data), // 취소(관리자id 받아야됨)
 };
 
 export const noticeAPI = {

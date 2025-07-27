@@ -30,7 +30,7 @@ function Sidebar({ isOpen = false, onClose = () => { } }) {
   const pathname = usePathname()
 
   const navItems = [
-    { icon: Home, label: "대시보드", key: "dashboard", href: "/" },
+    { icon: BarChart3, label: "통계/분석", key: "analytics", href: "/analytics" },
     { icon: Users, label: "회원 관리", key: "회원관리", href: "/users" },
     { icon: Package, label: "식재료 관리", key: "ingredient", href: "/ingredients" },
     { icon: BarChart3, label: "통계/분석", key: "analytics", href: "/analytics" },
