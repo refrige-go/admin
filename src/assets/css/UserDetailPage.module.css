@@ -1,0 +1,106 @@
+.container {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.card {
+  flex: 1;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  padding: 1.5rem;
+  color: #222;  /* 카드 기본 글씨색 */
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: #000000;  /* 제목 글씨색 */
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #f2f2f2;
+  color: #222;  /* 정보 글씨색 */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actions button {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f9f9f9;
+  cursor: pointer;
+  color: #000000;  /* 버튼 글씨색 */
+}
+
+.link {
+  color: #2563eb;
+  text-decoration: underline;
+  font-size: 0.85rem;
+}
+
+.googleIcon {
+  display: inline-block;
+  background: url('/images/login_icons/logo_google.png') no-repeat center center;
+  background-size: 18px 18px;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.naverIcon {
+  display: inline-block;
+  background: url('/images/login_icons/logo_naver.png') no-repeat center center;
+  background-size: 18px 18px;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.imageSection {
+  margin-top: 32px;
+}
+
+.imageSectionTitle {
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.imageListRow {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.imageListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.imageItem {
+  display: flex;
+  align-items: center;
+}

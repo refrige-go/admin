@@ -1,0 +1,70 @@
+.pageContainer {
+  padding: 24px;
+  background-color: #E2E9EF;
+  min-width: 900px;
+  max-width: 1600px;
+  min-height: 100vh;
+  margin: 40px auto 40px auto;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.pageCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  box-sizing: border-box;
+  min-height: 750px;
+}
+
+.pageTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 20px;
+}
+
+.pageContent {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 500px;
+}
+
+.pagePagination {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 1200px) {
+  .pageContainer {
+    min-width: 0;
+    max-width: 100vw;
+    padding: 12px;
+  }
+  .pageCard {
+    padding: 12px;
+    min-height: 500px;
+  }
+  .pageContent {
+    padding: 10px;
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    margin: 16px auto 16px auto;
+    padding: 4px;
+  }
+  .pageCard {
+    padding: 4px;
+    min-height: 300px;
+  }
+  .pageContent {
+    padding: 4px;
+    min-height: 150px;
+  }
+}
