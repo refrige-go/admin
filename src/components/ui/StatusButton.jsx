@@ -11,6 +11,7 @@ export default function StatusButton({ label, type, status }) {
       SUSPENDED: styles.userStatusSuspended,
       WITHDRAWN: styles.userStatusWithdrawn,
     },
+
   };
 
   const buttonClass = classMap[type]?.[status] || styles.defaultButton;

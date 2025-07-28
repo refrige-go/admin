@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Edit, Trash2, ArrowLeft, Save, X } from "lucide-react";
 import styles from "../../../assets/css/UserDetailPage.module.css";
 
+
 // 날짜 포맷
 function formatDate(dateStr, locale = 'ko') {
   if (!dateStr) return '-';
@@ -69,6 +70,7 @@ export default function UserDetailPage() {
         alert('회원 정보를 불러오지 못했습니다.');
         // 오류 발생 시 뒤로가기
         router.back();
+
       } finally {
         setLoading(false);
       }
@@ -211,7 +213,7 @@ export default function UserDetailPage() {
             <select
               value={editForm.role}
               onChange={(e) => handleInputChange('role', e.target.value)}
-              className="px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[90px]"
             >
               <option value="ROLE_USER">회원</option>
               <option value="ROLE_ADMIN">관리자</option>
@@ -223,13 +225,14 @@ export default function UserDetailPage() {
           )}
         </div>
         
+
         <div className={styles.infoRow}>
           <span>상태</span>
           <span>
             <StatusButton label={userStatusLabel[user.deleted ? 'WITHDRAWN' : 'ACTIVE']} type="userStatus" status={user.deleted ? 'WITHDRAWN' : 'ACTIVE'} />
           </span>
         </div>
-        
+
         <div className={styles.infoRow}><span>가입일</span><span>{formatDate(user.createdAt, 'en')}</span></div>
         <div className={styles.infoRow}><span>수정일</span><span>{user.updatedAt ? formatDate(user.updatedAt, 'en') : '-'}</span></div>
         <div className={styles.infoRow}><span>삭제일</span><span>{user.deletedAt ? formatDate(user.deletedAt, 'en') : '-'}</span></div>

@@ -10,6 +10,7 @@ import PageContainer from "@/components/ui/PageContainer";
 
 export default function UsersPage() {
   const router = useRouter();
+
   const [roleFilter, setRoleFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [joinDateSort, setJoinDateSort] = useState("latest");
@@ -69,7 +70,8 @@ export default function UsersPage() {
       }
     }
 
-    // 검색 필터링링
+    // 검색 필터링
+
     if (searchKeyword) {
       filtered = filtered.filter(user => {
         let searchValue = "";
