@@ -11,19 +11,7 @@ export default function StatusButton({ label, type, status }) {
       SUSPENDED: styles.userStatusSuspended,
       WITHDRAWN: styles.userStatusWithdrawn,
     },
-    dogStatus: {
-      REGISTERED: styles.dogStatusRegistered,
-      APPROVED: styles.dogStatusApproved,
-      SUSPENDED: styles.dogStatusSuspended,
-      REMOVED: styles.dogStatusRemoved,
-    },
-    customStatus: {
-      PENDING: styles.customStatusPending,
-      IN_PROGRESS: styles.customStatusInprogress,
-      HOLD: styles.customStatusHold,
-      COMPLETED: styles.customStatusCompleted,
-      CANCELED: styles.customStatusCanceled,
-    }
+
   };
 
   const buttonClass = classMap[type]?.[status] || styles.defaultButton;

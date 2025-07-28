@@ -12,7 +12,7 @@ import styles from "@/assets/css/UserPage.module.css";
  * @returns {JSX.Element}
  */
 export default function SearchBar({
-  searchField = "email",
+  searchField = "username",
   searchKeyword = "",
   onSearchFieldChange = () => {},
   onSearchKeywordChange = () => {},
@@ -36,7 +36,7 @@ export default function SearchBar({
           className="flex items-center gap-2 border border-[#ddd] rounded px-3 py-2 text-sm bg-white hover:bg-gray-50"
           onClick={handleDropdownToggle}
         >
-          {searchField === 'email' ? '이메일' : '닉네임'}
+          {searchField === 'username' ? '아이디' : '닉네임'}
           <ChevronDown className="w-4 h-4 text-[#777]" />
         </button>
 
@@ -44,8 +44,8 @@ export default function SearchBar({
           <ul className="absolute z-10 mt-1 w-full border border-[#ddd] rounded bg-white text-sm shadow">
             <li
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => handleFieldSelect('email')}
-            >이메일</li>
+              onClick={() => handleFieldSelect('username')}
+            >아이디</li>
             <li
               className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
               onClick={() => handleFieldSelect('nickname')}
@@ -56,7 +56,7 @@ export default function SearchBar({
 
       <input
         type="text"
-        placeholder={`검색어(${searchField === 'email' ? '이메일' : '닉네임'})`}
+        placeholder={`검색어(${searchField === 'username' ? '아이디' : '닉네임'})`}
         className={styles.usersSearchInput}
         value={searchKeyword}
         onChange={(e) => onSearchKeywordChange(e.target.value)}
