@@ -7,6 +7,30 @@ const defaultHeaders = {
   'Content-Type': 'application/json',
 };
 
+// 토큰 재발급 함수
+const refreshToken = async () => {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/reissue`, {
+      method: "POST",
+      credentials: "include",
+    });
+    
+    if (response.ok) {
+      const authHeader = response.headers.get("Authorization");
+      const newAccessToken = authHeader.replace("Bearer ", "");
+      localStorage.setItem("accessToken", newAccessToken);
+      return newAccessToken;
+    } else {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
+  } catch (error) {
+    console.error("토큰 재발급 실패:", error);
+    window.location.href = "/login";
+  }
+};
+
 /**
  * API 요청을 처리하는 기본 함수
  * @param {string} endpoint - API 엔드포인트
@@ -27,7 +51,7 @@ async function apiRequest(endpoint, options = {}) {
   }
 
   // 인증 토큰이 있다면 헤더에 추가
-  const token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem('accessToken');
   console.log('인증 토큰 확인:', token);
   console.log('현재 요청 URL:', url);
   console.log('요청 헤더:', config.headers);
@@ -121,11 +145,83 @@ export const dashboardAPI = {
 };
 
 export const usersAPI = {
-  getUsers: () => apiGet('/user'),
-  getUser: (id) => apiGet(`/user/${id}`),
-  createUser: (userData) => apiPost('/user', userData),
-  updateUser: (id, userData) => apiPut(`/user/${id}`, userData),
-  deleteUser: (id) => apiDelete(`/user/${id}`),
+  getUsers: async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user`, {
+      headers: getAuthHeaders(),
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        await refreshToken();
+        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user`, {
+          headers: getAuthHeaders(),
+        });
+        return retryResponse.json();
+      }
+      throw new Error("사용자 데이터를 불러오는데 실패했습니다.");
+    }
+    return response.json();
+  },
+  
+  getUser: async (id) => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+      headers: getAuthHeaders(),
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        await refreshToken();
+        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+          headers: getAuthHeaders(),
+        });
+        return retryResponse.json();
+      }
+      throw new Error("사용자 정보를 불러오는데 실패했습니다.");
+    }
+    return response.json();
+  },
+  
+  updateUser: async (id, userData) => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(userData),
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        await refreshToken();
+        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+          method: "PUT",
+          headers: getAuthHeaders(),
+          body: JSON.stringify(userData),
+        });
+        return retryResponse.json();
+      }
+      throw new Error("사용자 정보 수정에 실패했습니다.");
+    }
+    return response.json();
+  },
+  
+  deleteUser: async (id) => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        await refreshToken();
+        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+          method: "DELETE",
+          headers: getAuthHeaders(),
+        });
+        return retryResponse.json();
+      }
+      throw new Error("사용자 삭제에 실패했습니다.");
+    }
+    return response.json();
+  },
 };
 
 export const noticeAPI = {

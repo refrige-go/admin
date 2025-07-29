@@ -7,6 +7,7 @@ import StatusButton from "@/components/ui/StatusButton";
 import styles from "@/assets/css/UserPage.module.css";
 import UserFilters from "@/components/ui/UserFilters";
 import PageContainer from "@/components/ui/PageContainer";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function UsersPage() {
   const router = useRouter();
@@ -160,49 +161,45 @@ export default function UsersPage() {
     },
   ];
 
-  if (isLoading) {
-    return (
-      <PageContainer title="회원정보">
-        <div className={styles.usersLoading}>
-          <div className={styles.usersSpinner}></div>
-          <span className={styles.usersLoadingText}>데이터를 불러오는 중...</span>
-        </div>
-      </PageContainer>
-    );
-  }
-
-  if (error) {
-    return (
-      <PageContainer title="회원정보">
-        <div className={styles.usersError}>
-          <div className={styles.usersErrorMessage}>{error}</div>
-          <button onClick={() => window.location.reload()} className={styles.usersRetryButton}>다시 시도</button>
-        </div>
-      </PageContainer>
-    );
-  }
-
   return (
-    <PageContainer title="회원정보"
-      currentPage={currentPage}
-      totalPages={totalPages}
-      onPageChange={setCurrentPage}
-    >
-      <UserFilters
-        searchField={searchField}
-        searchKeyword={searchKeyword}
-        onSearchFieldChange={setSearchField}
-        onSearchKeywordChange={setSearchKeyword}
-        roleFilter={roleFilter}
-        onRoleFilterChange={setRoleFilter}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
-        joinDateSort={joinDateSort}
-        onJoinDateSortChange={setJoinDateSort}
-        deleteDateSort={deleteDateSort}
-        onDeleteDateSortChange={setDeleteDateSort}
-      />
-      <DataTable columns={columns} data={paginatedData} onRowAction={handleRowAction} />
-    </PageContainer>
+    <ProtectedRoute> 
+      {isLoading ? (
+        <PageContainer title="회원정보">
+          <div className={styles.usersLoading}>
+            <div className={styles.usersSpinner}></div>
+            <span className={styles.usersLoadingText}>데이터를 불러오는 중...</span>
+          </div>
+        </PageContainer>
+      ) : error ? (
+        <PageContainer title="회원정보">
+          <div className={styles.usersError}>
+            <div className={styles.usersErrorMessage}>{error}</div>
+            <button onClick={() => window.location.reload()} className={styles.usersRetryButton}>다시 시도</button>
+          </div>
+        </PageContainer>
+      ) : (
+        <PageContainer title="회원정보"
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        >
+          <UserFilters
+            searchField={searchField}
+            searchKeyword={searchKeyword}
+            onSearchFieldChange={setSearchField}
+            onSearchKeywordChange={setSearchKeyword}
+            roleFilter={roleFilter}
+            onRoleFilterChange={setRoleFilter}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+            joinDateSort={joinDateSort}
+            onJoinDateSortChange={setJoinDateSort}
+            deleteDateSort={deleteDateSort}
+            onDeleteDateSortChange={setDeleteDateSort}
+          />
+          <DataTable columns={columns} data={paginatedData} onRowAction={handleRowAction} />
+        </PageContainer>
+      )}
+    </ProtectedRoute> 
   );
 }
