@@ -8,9 +8,11 @@ import styles from "@/assets/css/UserPage.module.css";
 import UserFilters from "@/components/ui/UserFilters";
 import PageContainer from "@/components/ui/PageContainer";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function UsersPage() {
   const router = useRouter();
+  const { user: currentUser } = useAuth();
 
   const [roleFilter, setRoleFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -126,7 +128,11 @@ export default function UsersPage() {
 
   // 권한 표시 함수
   const getRoleLabel = (role) => {
-    console.log('권한 값:', role); // 디버깅용
+    // 현재 로그인한 사용자만 로그 출력
+    if (currentUser && role === currentUser.role) {
+      console.log('🔐 현재 로그인 사용자 권한:', role);
+    }
+    
     if (role === 'ROLE_ADMIN' || role === 'ADMIN') {
       return '관리자';
     } else if (role === 'ROLE_USER' || role === 'USER') {

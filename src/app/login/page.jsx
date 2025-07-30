@@ -40,21 +40,20 @@ export default function LoginPage() {
       const accessToken = rawAuthorization?.replace('Bearer ', '');
       
       if (accessToken) {
-        console.log('로그인 성공 - 토큰:', accessToken);
-        
-        // �� 사용자 데이터 생성
+        console.log('로그인 성공');
+        // 사용자 데이터 생성
         const userData = {
           username: formData.username,
           nickname: formData.username,
           role: "ROLE_ADMIN"
         };
         
-        // �� AuthContext의 login 함수 사용
+        // AuthContext의 login 함수 사용
         login(accessToken, userData);
         
         console.log('🚀 대시보드로 이동');
         
-        // 🔥 올바른 페이지로 이동
+        // 올바른 페이지로 이동
         router.push('/');
       } else {
         console.error('토큰이 없습니다.');
@@ -63,7 +62,7 @@ export default function LoginPage() {
     } catch (error) {
       console.error('로그인 실패:', error);
       
-      // 🔥 오류 상태에 따른 메시지 설정
+      //  오류 상태에 따른 메시지 설정
       if (error.response?.status === 403) {
         setError('관리자 권한이 필요합니다. 일반 사용자는 접근할 수 없습니다.');
       } else if (error.response?.status === 401) {

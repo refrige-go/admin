@@ -13,19 +13,16 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (!initializedRef.current) {
-      console.log("AuthContext 초기화 시작");
       checkAuthStatus();
       initializedRef.current = true;
     }
   }, []);
 
   const checkAuthStatus = async () => {
-    console.log("🔍 AuthContext - checkAuthStatus 실행");
 
     const token = localStorage.getItem("accessToken");
     const userData = localStorage.getItem("user");
     
-    console.log("토큰:", token);
     console.log("사용자 데이터:", userData);
 
     if (token && userData) {
@@ -90,8 +87,6 @@ export function AuthProvider({ children }) {
     setUser(null);
     setIsAuthenticated(false);
   };
-
-  console.log("🔄 AuthContext 렌더링 - isAuthenticated:", isAuthenticated, "user:", user);
 
   return (
     <AuthContext.Provider value={{ user, loading, isAuthenticated, login, logout, checkAuthStatus }}>

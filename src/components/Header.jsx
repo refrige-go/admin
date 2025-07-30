@@ -16,8 +16,6 @@ function Header({ onMenuClick }) {
   const { user, isAuthenticated, logout } = useAuth();
   const router = useRouter();
 
-  console.log("🎯 Header 렌더링 - isAuthenticated:", isAuthenticated, "user:", user);  
-
   const handleLogout = async () => {
     logout();
     router.push('/login');
