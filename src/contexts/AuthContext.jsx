@@ -66,7 +66,6 @@ export function AuthProvider({ children }) {
   const login = (token, userData) => {
 
     console.log("🔐 AuthContext - login 실행");
-    console.log("토큰:", token);
     console.log("사용자 데이터:", userData)
 
     // 즉시 상태 업뎃
