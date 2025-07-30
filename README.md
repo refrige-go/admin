@@ -66,10 +66,14 @@
 - **HTTP Client**: Fetch API
 - **Environment**: NEXT_PUBLIC_BACKEND_URL
 
-## �� 프로젝트 구조
+## 프로젝트 구조
+
+```
 src/
 ├── app/ # Next.js App Router
 │ ├── page.jsx # 대시보드
+│ ├── login/ # 로그인
+│ │ └── page.jsx # 로그인 페이지
 │ ├── users/ # 회원 관리
 │ │ ├── page.jsx # 회원 목록
 │ │ └── [id]/ # 회원 상세
@@ -81,14 +85,20 @@ src/
 ├── components/ # 재사용 컴포넌트
 │ ├── ui/ # UI 컴포넌트
 │ │ ├── Button.jsx
+│ │ ├── Card.jsx
 │ │ ├── DataTable.jsx
 │ │ ├── SearchBar.jsx
 │ │ ├── StatusButton.jsx
 │ │ └── UserFilters.jsx
 │ ├── Dashboard.jsx # 대시보드 컴포넌트
-│ └── Sidebar.jsx # 사이드바 컴포넌트
+│ ├── Header.jsx # 헤더 컴포넌트
+│ ├── Sidebar.jsx # 사이드바 컴포넌트
+│ └── ProtectedRoute.jsx # 보호된 라우트
+├── contexts/ # React Context
+│ └── AuthContext.jsx # 인증 컨텍스트
 ├── assets/ # 정적 자원
 │ └── css/ # CSS 모듈
+│ └── LoginPage.module.css
 └── lib/ # 유틸리티
 └── api.js # API 함수들
 
@@ -152,14 +162,14 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:8080
 - 회원 검색 및 필터링 컴포넌트
 - 검색어, 권한, 상태, 정렬 옵션 제공
 
-## �� 보안 고려사항
+## 보안 고려사항
 
 - **관리자 권한 확인**: 백엔드에서 관리자 권한 검증
 - **입력 검증**: 프론트엔드 및 백엔드 이중 검증
 - **XSS 방지**: React의 기본 XSS 방지 기능 활용
 - **CSRF 보호**: 백엔드에서 CSRF 토큰 검증
 
-## �� 향후 계획
+## 향후 계획
 
 ### 단기 계획
 - [ ] 통계/분석 페이지 구현
