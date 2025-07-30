@@ -2,7 +2,7 @@
 
 import { Bell, Settings } from 'lucide-react'
 import { Button } from './ui/Button'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '../contexts/AuthContext'
 import Link from 'next/link'
 import { useRouter } from "next/navigation";
 
@@ -14,13 +14,13 @@ import { useRouter } from "next/navigation";
  */
 function Header({ onMenuClick }) {
   const { user, isAuthenticated, logout } = useAuth();
-
   const router = useRouter();
 
+  console.log("🎯 Header 렌더링 - isAuthenticated:", isAuthenticated, "user:", user);  
+
   const handleLogout = async () => {
-    localStorage.removeItem('auth_token');
-    await logout();
-    router.push('/');
+    logout();
+    router.push('/login');
   };
 
   return (
@@ -49,11 +49,11 @@ function Header({ onMenuClick }) {
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
               <span className="text-[#190a49] text-sm font-medium">
-                {user?.name?.charAt(0) || 'A'}
+                {user?.nickname?.charAt(0) || user?.username?.charAt(0) || 'A'}
               </span>
             </div>
             <span className="text-sm">
-              {user?.name || 'Admin'}
+              {user?.nickname || user?.username || 'Admin'}
             </span>
             <Button variant="outline" size="sm" className="text-white border-white ml-2" onClick={handleLogout}>
               로그아웃

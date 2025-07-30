@@ -1,125 +1,182 @@
-# Admin Dashboard
+# 어드민 페이지 (Admin Frontend)
 
-React와 Next.js로 구축된 현대적인 관리자 대시보드입니다.
+## 프로젝트 개요
+냉장고 관리 서비스의 관리자용 웹 인터페이스입니다. 회원 관리, 식재료 관리 등의 기능을 제공합니다.
 
-## 기술 스택
+## 🚀 주요 기능 요약
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Charts**: ApexCharts
+### 1. 회원 관리 (User Management)
+- **회원 목록 조회**: 전체 회원 정보를 테이블 형태로 표시
+- **회원 검색**: 아이디/닉네임으로 회원 검색
+- **회원 필터링**: 권한(관리자/회원), 상태(정상/탈퇴)별 필터링
+- **회원 정렬**: 가입일, 삭제일 기준 정렬 (최신순/오래된순)
+- **회원 상세 조회**: 개별 회원의 상세 정보 확인
+- **회원 정보 수정**: 권한 변경 (닉네임은 수정 불가)
+- **회원 삭제**: 회원 탈퇴 처리 (소프트 삭제)
+
+### 2. 식재료 관리 (Ingredient Management)
+- **식재료 목록 조회**: 전체 식재료 정보 표시
+- **식재료 추가**: 새로운 식재료 등록
+- **식재료 수정**: 기존 식재료 정보 수정
+- **식재료 삭제**: 식재료 삭제
+
+### 3. 대시보드 (Dashboard)
+- **통계 정보**: 전체 회원 수, 식재료 수 등 주요 지표 표시
+
+## 사용 흐름
+
+### 회원 관리 흐름
+1. **로그인 → 대시보드**
+2. **사이드바에서 "회원 관리" 클릭**
+3. **회원 목록 페이지에서:**
+   - **검색**: 아이디/닉네임 입력으로 회원 검색
+   - **필터링**: 권한/상태 드롭다운으로 필터링
+   - **정렬**: 가입일/삭제일 버튼으로 정렬
+   - **페이지네이션**: 하단 페이지 번호로 이동
+4. **회원 상세보기**: 돋보기 아이콘 클릭
+5. **회원 상세 페이지에서:**
+   - **정보 확인**: 닉네임, 아이디, 권한, 상태 등
+   - **수정**: "수정" 버튼 → 권한 변경 → "저장"
+   - **삭제**: "삭제" 버튼 → 확인 → 탈퇴 처리
+   - **뒤로가기**: "뒤로가기" 버튼으로 목록으로 복귀
+
+### 식재료 관리 흐름
+1. **사이드바에서 "식재료 추가" 클릭**
+2. **식재료 목록 페이지에서:**
+   - **목록 확인**: 전체 식재료 정보 표시
+   - **추가**: "추가" 버튼으로 새 식재료 등록
+   - **수정**: 개별 식재료 수정
+   - **삭제**: 개별 식재료 삭제
+3. **식재료 추가 페이지에서:**
+   - **정보 입력**: 이름, 카테고리, 유통기한, 보관방법 등
+   - **저장**: "추가" 버튼으로 등록
+   - **취소**: "취소" 버튼으로 목록으로 복귀
+
+## 🛠 기술 스택
+
+### Frontend
+- **Framework**: Next.js 14
+- **Language**: JavaScript/JSX
+- **Styling**: CSS Modules, Tailwind CSS
 - **Icons**: Lucide React
-- **State Management**: React Hooks
+- **State Management**: React Hooks (useState, useEffect, useMemo)
 
-## 주요 기능
+### Backend Integration
+- **API**: RESTful API
+- **HTTP Client**: Fetch API
+- **Environment**: NEXT_PUBLIC_BACKEND_URL
 
-- 📊 반응형 대시보드
-- 📈 인터랙티브 차트 (ApexCharts)
-- 🎨 모던한 UI/UX
-- 📱 모바일 친화적 디자인
-- ⚡ 빠른 성능 (SSR/SSG 지원)
+## 프로젝트 구조
 
-## 시작하기
+```
+src/
+├── app/ # Next.js App Router
+│ ├── page.jsx # 대시보드
+│ ├── login/ # 로그인
+│ │ └── page.jsx # 로그인 페이지
+│ ├── users/ # 회원 관리
+│ │ ├── page.jsx # 회원 목록
+│ │ └── [id]/ # 회원 상세
+│ │ └── page.jsx
+│ └── ingredients/ # 식재료 관리
+│ ├── page.jsx # 식재료 목록
+│ └── add/ # 식재료 추가
+│ └── page.jsx
+├── components/ # 재사용 컴포넌트
+│ ├── ui/ # UI 컴포넌트
+│ │ ├── Button.jsx
+│ │ ├── Card.jsx
+│ │ ├── DataTable.jsx
+│ │ ├── SearchBar.jsx
+│ │ ├── StatusButton.jsx
+│ │ └── UserFilters.jsx
+│ ├── Dashboard.jsx # 대시보드 컴포넌트
+│ ├── Header.jsx # 헤더 컴포넌트
+│ ├── Sidebar.jsx # 사이드바 컴포넌트
+│ └── ProtectedRoute.jsx # 보호된 라우트
+├── contexts/ # React Context
+│ └── AuthContext.jsx # 인증 컨텍스트
+├── assets/ # 정적 자원
+│ └── css/ # CSS 모듈
+│ └── LoginPage.module.css
+└── lib/ # 유틸리티
+└── api.js # API 함수들
+
+## 🎨 UI/UX 특징
+
+### 반응형 디자인
+- 모바일, 태블릿, 데스크톱 지원
+- Tailwind CSS를 활용한 반응형 레이아웃
+
+### 사용자 경험
+- **로딩 상태**: 데이터 로딩 중 스피너 표시
+- **에러 처리**: 오류 발생 시 사용자 친화적 메시지
+- **페이지네이션**: 대용량 데이터 효율적 처리
+- **검색/필터링**: 실시간 검색 및 필터링
+- **상태 표시**: 색상 코딩된 상태 버튼 (정상/탈퇴, 회원/관리자)
+
+### 접근성
+- 키보드 네비게이션 지원
+- 시맨틱 HTML 구조
+- 적절한 ARIA 라벨
+
+## ⚙️ 개발 환경 설정
 
 ### 필수 요구사항
-
-- Node.js 18.0 이상
+- Node.js 18+
 - npm 또는 yarn
 
-### 설치
-
+### 설치 및 실행
 ```bash
 # 의존성 설치
 npm install
 
 # 개발 서버 실행
 npm run dev
-```
 
-### 빌드
-
-```bash
-# 프로덕션 빌드
+# 빌드
 npm run build
 
-# 프로덕션 서버 실행
+# 프로덕션 실행
 npm start
 ```
 
-## 프로젝트 구조
-
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx         # 루트 레이아웃
-│   └── page.tsx           # 메인 페이지
-├── components/            # React 컴포넌트
-│   ├── charts/           # 차트 컴포넌트
-│   ├── Dashboard.tsx     # 메인 대시보드
-│   ├── Header.tsx        # 헤더 컴포넌트
-│   ├── Sidebar.tsx       # 사이드바 컴포넌트
-│   ├── Timeline.tsx      # 타임라인 컴포넌트
-│   └── TopStrip.tsx      # 상단 스트립 컴포넌트
-└── styles/               # 스타일 파일
-    └── globals.css       # 전역 스타일
-```
-
-## 컴포넌트 설명
-
-### Dashboard
-메인 대시보드 컴포넌트로 모든 섹션을 통합합니다.
-
-### Sidebar
-네비게이션 사이드바로 모바일에서는 오버레이로 표시됩니다.
-
-### Header
-상단 헤더로 검색, 알림, 사용자 프로필을 포함합니다.
-
-### Charts
-- **ProfitChart**: 수익과 지출을 보여주는 영역 차트
-- **TrafficChart**: 트래픽 분포를 보여주는 도넛 차트
-- **EarningChart**: 수익 추이를 보여주는 라인 차트
-
-### Timeline
-업coming 스케줄을 타임라인 형태로 표시합니다.
-
-## 스타일링
-
-Tailwind CSS를 사용하여 스타일링하며, 커스텀 컴포넌트 클래스도 정의되어 있습니다:
-
-- `.btn-primary`: 기본 버튼 스타일
-- `.btn-secondary`: 보조 버튼 스타일
-- `.card`: 카드 컨테이너 스타일
-
-## 환경 변수
-
-프로젝트 루트에 `.env.local` 파일을 생성하여 환경 변수를 설정할 수 있습니다:
-
+### 환경 변수
 ```env
-NEXT_PUBLIC_API_URL=your_api_url_here
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8080
 ```
 
-## 배포
+## 📊 주요 컴포넌트
 
-Vercel, Netlify 등 다양한 플랫폼에 배포할 수 있습니다.
+### DataTable
+- 재사용 가능한 테이블 컴포넌트
+- 정렬, 필터링, 페이지네이션 지원
+- 커스텀 렌더링 함수 지원
 
-```bash
-# Vercel 배포
-vercel
+### StatusButton
+- 상태 표시용 버튼 컴포넌트
+- 색상 코딩된 상태 표시
+- 회원 상태, 권한 등에 활용
 
-# Netlify 배포
-npm run build
-# dist 폴더를 Netlify에 업로드
-```
+### UserFilters
+- 회원 검색 및 필터링 컴포넌트
+- 검색어, 권한, 상태, 정렬 옵션 제공
 
-## 라이선스
+## 보안 고려사항
 
-MIT License
+- **관리자 권한 확인**: 백엔드에서 관리자 권한 검증
+- **입력 검증**: 프론트엔드 및 백엔드 이중 검증
+- **XSS 방지**: React의 기본 XSS 방지 기능 활용
+- **CSRF 보호**: 백엔드에서 CSRF 토큰 검증
 
-## 기여하기
+## 향후 계획
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request 
+### 단기 계획
+- [ ] 통계/분석 페이지 구현
+- [ ] 문의사항 관리 기능
+- [ ] 공지사항 관리 기능
+
+### 장기 계획
+- [ ] 실시간 알림 기능
+- [ ] 대시보드 차트 및 그래프
+- [ ] 엑셀 내보내기 기능

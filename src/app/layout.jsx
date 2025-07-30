@@ -4,7 +4,7 @@ import { useState } from 'react'
 import '../styles/globals.css'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
-import { AuthProvider } from '../hooks/useAuth'
+import { AuthProvider } from '../contexts/AuthContext'
 
 export default function RootLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)

@@ -14,7 +14,8 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
-  ListTodo
+  ListTodo,
+  ChefHat
 } from 'lucide-react'
 import { classNames } from '../lib/utils'
 
@@ -33,7 +34,7 @@ function Sidebar({ isOpen = false, onClose = () => { } }) {
     { icon: BarChart3, label: "통계/분석", key: "analytics", href: "/analytics" },
     { icon: Users, label: "회원 관리", key: "회원관리", href: "/users" },
     { icon: Package, label: "식재료 관리", key: "ingredient", href: "/ingredients" },
-    { icon: BarChart3, label: "통계/분석", key: "analytics", href: "/analytics" },
+    { icon: ChefHat, label: "레시피 추가", key: "recipe", href: "/recipe" },
     { icon: HelpCircle, label: "문의사항", key: "inquiry", href: "/inquiry" },
     { icon: Megaphone, label: "공지사항", key: "notice", href: "/notice" },
   ]
@@ -49,8 +50,8 @@ function Sidebar({ isOpen = false, onClose = () => { } }) {
     if (pathname.startsWith('/ingredients')) {
       return 'ingredient';
     }
-    if (pathname.startsWith('/analytics')) {
-      return 'analytics';
+    if (pathname.startsWith('/recipe')) { 
+      return 'recipe';
     }
     if (pathname.startsWith('/inquiry')) {
       return 'inquiry';
