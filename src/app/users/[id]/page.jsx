@@ -1,3 +1,5 @@
+/* 사용자 상세 페이지 */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,6 +9,7 @@ import StatusButton from "@/components/ui/StatusButton";
 import { Button } from "@/components/ui/Button";
 import { Edit, Trash2, ArrowLeft, Save, X } from "lucide-react";
 import styles from "../../../assets/css/UserDetailPage.module.css";
+import { getAuthHeaders } from "@/lib/api";
 
 
 // 날짜 포맷
@@ -44,7 +47,9 @@ export default function UserDetailPage() {
       setLoading(true);
       try {
         // 백엔드 API 직접 호출
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
+          headers: getAuthHeaders(),
+        });
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -93,11 +98,9 @@ export default function UserDetailPage() {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(editForm),
       });
 
@@ -109,7 +112,9 @@ export default function UserDetailPage() {
       setIsEditing(false);
       
       // 사용자 정보 다시 불러오기
-      const updatedResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`);
+      const updatedResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
+        headers: getAuthHeaders(),
+      });
       const updatedData = await updatedResponse.json();
       setUser(updatedData);
     } catch (error) {
@@ -121,8 +126,9 @@ export default function UserDetailPage() {
   const handleDelete = async () => {
     if (confirm('정말로 이 사용자를 삭제하시겠습니까?')) {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
           method: 'DELETE',
+          headers: getAuthHeaders(),
         });
 
         if (!response.ok) {

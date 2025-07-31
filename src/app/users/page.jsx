@@ -1,3 +1,5 @@
+/* 사용자 관리 페이지 */
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -9,8 +11,12 @@ import UserFilters from "@/components/ui/UserFilters";
 import PageContainer from "@/components/ui/PageContainer";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
+import { getAuthHeaders } from "@/lib/api";
+import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
 
 export default function UsersPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
   const { user: currentUser } = useAuth();
 
@@ -36,7 +42,9 @@ export default function UsersPage() {
         setError(null);
         
         //백엔드 API 호출
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin`, {
+          headers: getAuthHeaders(), // ← 인증 헤더 추가
+        });
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -168,44 +176,57 @@ export default function UsersPage() {
   ];
 
   return (
-    <ProtectedRoute> 
-      {isLoading ? (
-        <PageContainer title="회원정보">
-          <div className={styles.usersLoading}>
-            <div className={styles.usersSpinner}></div>
-            <span className={styles.usersLoadingText}>데이터를 불러오는 중...</span>
-          </div>
-        </PageContainer>
-      ) : error ? (
-        <PageContainer title="회원정보">
-          <div className={styles.usersError}>
-            <div className={styles.usersErrorMessage}>{error}</div>
-            <button onClick={() => window.location.reload()} className={styles.usersRetryButton}>다시 시도</button>
-          </div>
-        </PageContainer>
-      ) : (
-        <PageContainer title="회원정보"
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        >
-          <UserFilters
-            searchField={searchField}
-            searchKeyword={searchKeyword}
-            onSearchFieldChange={setSearchField}
-            onSearchKeywordChange={setSearchKeyword}
-            roleFilter={roleFilter}
-            onRoleFilterChange={setRoleFilter}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
-            joinDateSort={joinDateSort}
-            onJoinDateSortChange={setJoinDateSort}
-            deleteDateSort={deleteDateSort}
-            onDeleteDateSortChange={setDeleteDateSort}
+    <ProtectedRoute requireAdmin={true}> 
+      <div className="min-h-screen bg-[#e2e9ef]">
+        <Header onMenuClick={() => setSidebarOpen(true)} />
+        
+        <div className="flex">
+          <Sidebar 
+            isOpen={sidebarOpen} 
+            onClose={() => setSidebarOpen(false)} 
           />
-          <DataTable columns={columns} data={paginatedData} onRowAction={handleRowAction} />
-        </PageContainer>
-      )}
+          
+          <main className="flex-1 p-6">
+            {isLoading ? (
+              <PageContainer title="회원정보">
+                <div className={styles.usersLoading}>
+                  <div className={styles.usersSpinner}></div>
+                  <span className={styles.usersLoadingText}>데이터를 불러오는 중...</span>
+                </div>
+              </PageContainer>
+            ) : error ? (
+              <PageContainer title="회원정보">
+                <div className={styles.usersError}>
+                  <div className={styles.usersErrorMessage}>{error}</div>
+                  <button onClick={() => window.location.reload()} className={styles.usersRetryButton}>다시 시도</button>
+                </div>
+              </PageContainer>
+            ) : (
+              <PageContainer title="회원정보"
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              >
+                <UserFilters
+                  searchField={searchField}
+                  searchKeyword={searchKeyword}
+                  onSearchFieldChange={setSearchField}
+                  onSearchKeywordChange={setSearchKeyword}
+                  roleFilter={roleFilter}
+                  onRoleFilterChange={setRoleFilter}
+                  statusFilter={statusFilter}
+                  onStatusFilterChange={setStatusFilter}
+                  joinDateSort={joinDateSort}
+                  onJoinDateSortChange={setJoinDateSort}
+                  deleteDateSort={deleteDateSort}
+                  onDeleteDateSortChange={setDeleteDateSort}
+                />
+                <DataTable columns={columns} data={paginatedData} onRowAction={handleRowAction} />
+              </PageContainer>
+            )}
+          </main>
+        </div>
+      </div>
     </ProtectedRoute> 
   );
 }

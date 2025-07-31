@@ -49,7 +49,7 @@ async function apiRequest(endpoint, options = {}) {
   if (options.body instanceof FormData) {
     delete config.headers['Content-Type'];
   }
-
+  
   // 인증 토큰이 있다면 헤더에 추가
   const token = localStorage.getItem('accessToken');
   console.log('인증 토큰 확인:', token);
@@ -66,6 +66,27 @@ async function apiRequest(endpoint, options = {}) {
     const response = await fetch(url, config);
 
     if (!response.ok) {
+      // 토큰 만료 처리
+      if (response.status === 401) {
+        try {
+          const errorData = await response.json();
+          if (errorData.code === 'TOKEN_EXPIRED') {
+            console.log('토큰이 만료되었습니다. 로그인 페이지로 이동합니다.');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+            return;
+          }
+        } catch (e) {
+          // JSON 파싱 실패 시에도 로그인 페이지로 이동
+          console.log('인증 오류. 로그인 페이지로 이동합니다.');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+          return;
+        }
+      }
+      
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -139,6 +160,34 @@ export const authAPI = {
   getProfile: () => apiGet('/user/me'),
 };
 
+// 인증 헤더 가져오기 함수
+export const getAuthHeaders = () => {
+  const token = localStorage.getItem('accessToken');
+
+  console.log('=== getAuthHeaders 호출 ===');
+  console.log('저장된 토큰:', token);
+  
+  let cleanToken = token;
+  if (token && token.startsWith('Bearer ')) {
+    cleanToken = token.substring(7);
+    console.log('Bearer 제거 후:', cleanToken);
+  }
+  
+  // 제어 문자 제거
+  cleanToken = cleanToken ? 
+    cleanToken.trim()
+        .replace(/[\x00-\x1F\x7F-\x9F]/g, '')
+        .replace(/\s+/g, '')
+    : '';
+  
+  console.log('최종 정리된 토큰:', cleanToken);
+  
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': cleanToken ? `Bearer ${cleanToken}` : '',
+  };
+};
+
 export const dashboardAPI = {
   getStats: () => apiGet('/dashboard/stats'),
   getRecentActivity: () => apiGet('/dashboard/activity'),
@@ -146,14 +195,14 @@ export const dashboardAPI = {
 
 export const usersAPI = {
   getUsers: async () => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin`, {
       headers: getAuthHeaders(),
     });
     
     if (!response.ok) {
       if (response.status === 401) {
         await refreshToken();
-        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user`, {
+        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin`, {
           headers: getAuthHeaders(),
         });
         return retryResponse.json();
@@ -164,14 +213,14 @@ export const usersAPI = {
   },
   
   getUser: async (id) => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
       headers: getAuthHeaders(),
     });
     
     if (!response.ok) {
       if (response.status === 401) {
         await refreshToken();
-        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
           headers: getAuthHeaders(),
         });
         return retryResponse.json();
@@ -182,7 +231,7 @@ export const usersAPI = {
   },
   
   updateUser: async (id, userData) => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify(userData),
@@ -191,7 +240,7 @@ export const usersAPI = {
     if (!response.ok) {
       if (response.status === 401) {
         await refreshToken();
-        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
           method: "PUT",
           headers: getAuthHeaders(),
           body: JSON.stringify(userData),
@@ -204,7 +253,7 @@ export const usersAPI = {
   },
   
   deleteUser: async (id) => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
       method: "DELETE",
       headers: getAuthHeaders(),
     });
@@ -212,7 +261,7 @@ export const usersAPI = {
     if (!response.ok) {
       if (response.status === 401) {
         await refreshToken();
-        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+        const retryResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
           method: "DELETE",
           headers: getAuthHeaders(),
         });
