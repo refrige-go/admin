@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { DataTable, FilterPanel } from "@/components/ui";
 import { noticeAPI } from "@/lib/api";
-import PageContainer from "@/components/ui/PageContainer";
 import { useRouter } from "next/navigation";
+import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 const noticeCategoryOptions = [
   { value: "", label: "전체" },
@@ -36,8 +38,9 @@ const filterConfig = [
 ];
 
 export default function NoticePage() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filters, setFilters] = useState({ category: "", title: "", sortOrder: "latest" });
-  const [noticeList, setNoticeList] = useState([]); // 단순 배열
+  const [noticeList, setNoticeList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -105,43 +108,60 @@ export default function NoticePage() {
   };
 
   return (
-    <PageContainer title="공지사항">
-      <div className="flex items-center justify-between mb-6">
-        <div />
-        <button
-          onClick={() => router.push("/notice/create")}
-          className="bg-[#47caeb] hover:bg-[#47caeb]/90 text-white rounded-lg px-6 py-2 text-sm font-medium transition-colors"
-        >
-          등록
-        </button>
+    <ProtectedRoute requireAdmin={true}>
+      <div className="min-h-screen bg-[#e2e9ef]">
+        <Header onMenuClick={() => setSidebarOpen(true)} />
+        
+        <div className="flex">
+          <Sidebar 
+            isOpen={sidebarOpen} 
+            onClose={() => setSidebarOpen(false)} 
+          />
+          
+          <main className="flex-1 p-6">
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-[#000000]">공지사항</h2>
+                  <button
+                    onClick={() => router.push("/notice/create")}
+                    className="bg-[#f9bf52] hover:bg-[#e6a94a] text-[#2d1b0a] rounded-lg px-6 py-2 text-sm font-medium transition-colors"
+                  >
+                    등록
+                  </button>
+                </div>
+                <FilterPanel filters={filterConfig} values={filters} onChange={handleFilterChange} />
+                <DataTable
+                  columns={columns}
+                  data={pagedData}
+                  onRowAction={handleRowAction}
+                  loading={isLoading}
+                  error={error}
+                />
+                <div className="flex justify-center mt-6">
+                  <button
+                    className="p-2 text-[#979797] hover:text-[#404040] transition-colors disabled:opacity-50"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                  >
+                    이전
+                  </button>
+                  <span className="mx-4 text-[#404040] text-sm">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    className="p-2 text-[#979797] hover:text-[#404040] transition-colors disabled:opacity-50"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage >= totalPages}
+                  >
+                    다음
+                  </button>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
       </div>
-      <FilterPanel filters={filterConfig} values={filters} onChange={handleFilterChange} />
-      <DataTable
-        columns={columns}
-        data={pagedData}
-        onRowAction={handleRowAction}
-        loading={isLoading}
-        error={error}
-      />
-      <div className="flex justify-center mt-6">
-        <button
-          className="p-2 text-[#979797] hover:text-[#404040] transition-colors disabled:opacity-50"
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage <= 1}
-        >
-          이전
-        </button>
-        <span className="mx-4 text-[#404040] text-sm">
-          {currentPage} / {totalPages}
-        </span>
-        <button
-          className="p-2 text-[#979797] hover:text-[#404040] transition-colors disabled:opacity-50"
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage >= totalPages}
-        >
-          다음
-        </button>
-      </div>
-    </PageContainer>
+    </ProtectedRoute>
   );
 } 

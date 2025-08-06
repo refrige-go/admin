@@ -25,10 +25,10 @@ export function Button({
   const baseClasses = 'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+    primary: 'bg-[#f9bf52] text-[#2d1b0a] hover:bg-[#e6a94a] focus:ring-[#f9bf52]/50',
     secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-blue-500',
+    outline: 'border border-[#f9bf52] text-[#2d1b0a] hover:bg-[#f9bf52] hover:text-[#2d1b0a] focus:ring-[#f9bf52]/50',
   };
   
   const sizeClasses = {

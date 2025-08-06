@@ -180,10 +180,10 @@ export default function AddIngredientPage() {
         </div>
 
         <div className="flex gap-4 pt-4">
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading} className="bg-[#f9bf52] text-[#2d1b0a] hover:bg-[#e6a94a]">
             {loading ? '추가 중...' : '추가'}
           </Button>
-          <Button type="button" variant="outline" onClick={() => router.back()}>
+          <Button type="button" variant="outline" onClick={() => router.back()} className="border-[#f9bf52] text-[#2d1b0a] hover:bg-[#f9bf52]">
             취소
           </Button>
         </div>

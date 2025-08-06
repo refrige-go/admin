@@ -94,7 +94,7 @@ export default function NoticeCreatePage() {
         </div>
         <button
           type="submit"
-          className="w-full bg-[#47caeb] hover:bg-[#47caeb]/90 text-white font-semibold py-2 rounded-lg transition-colors"
+          className="w-full bg-[#f9bf52] hover:bg-[#e6a94a] text-[#2d1b0a] font-semibold py-2 rounded-lg transition-colors"
           disabled={isSubmitting}
         >
           {isSubmitting ? "등록 중..." : "공지 등록"}

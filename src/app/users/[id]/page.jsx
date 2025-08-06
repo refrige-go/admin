@@ -1,3 +1,5 @@
+/* 사용자 상세 페이지 */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,6 +9,7 @@ import StatusButton from "@/components/ui/StatusButton";
 import { Button } from "@/components/ui/Button";
 import { Edit, Trash2, ArrowLeft, Save, X } from "lucide-react";
 import styles from "../../../assets/css/UserDetailPage.module.css";
+import { getAuthHeaders } from "@/lib/api";
 
 
 // 날짜 포맷
@@ -44,7 +47,9 @@ export default function UserDetailPage() {
       setLoading(true);
       try {
         // 백엔드 API 직접 호출
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
+          headers: getAuthHeaders(),
+        });
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -93,11 +98,9 @@ export default function UserDetailPage() {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(editForm),
       });
 
@@ -109,7 +112,9 @@ export default function UserDetailPage() {
       setIsEditing(false);
       
       // 사용자 정보 다시 불러오기
-      const updatedResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`);
+      const updatedResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
+        headers: getAuthHeaders(),
+      });
       const updatedData = await updatedResponse.json();
       setUser(updatedData);
     } catch (error) {
@@ -121,8 +126,9 @@ export default function UserDetailPage() {
   const handleDelete = async () => {
     if (confirm('정말로 이 사용자를 삭제하시겠습니까?')) {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/${id}`, {
           method: 'DELETE',
+          headers: getAuthHeaders(),
         });
 
         if (!response.ok) {
@@ -161,11 +167,11 @@ export default function UserDetailPage() {
               <>
                 {!user.deleted ? (
                   <>
-                    <Button onClick={handleEdit}>
+                    <Button onClick={handleEdit} className="bg-[#f9bf52] text-[#2d1b0a] hover:bg-[#e6a94a]">
                       <Edit className="w-4 h-4 mr-2" />
                       수정
                     </Button>
-                    <Button variant="destructive" onClick={handleDelete}>
+                    <Button variant="destructive" onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
                       <Trash2 className="w-4 h-4 mr-2" />
                       삭제
                     </Button>
@@ -177,17 +183,17 @@ export default function UserDetailPage() {
             ) : (
               // 수정 모드
               <>
-                <Button onClick={handleSave}>
+                <Button onClick={handleSave} className="bg-[#f9bf52] text-[#2d1b0a] hover:bg-[#e6a94a]">
                   <Save className="w-4 h-4 mr-2" />
                   저장
                 </Button>
-                <Button variant="outline" onClick={handleCancel}>
+                <Button variant="outline" onClick={handleCancel} className="border-[#f9bf52] text-[#2d1b0a] hover:bg-[#f9bf52]">
                   <X className="w-4 h-4 mr-2" />
                   취소
                 </Button>
               </>
             )}
-            <Button variant="outline" onClick={() => router.back()}>
+            <Button variant="outline" onClick={() => router.back()} className="border-[#f9bf52] text-[#2d1b0a] hover:bg-[#f9bf52]">
               <ArrowLeft className="w-4 h-4 mr-2" />
               뒤로가기
             </Button>

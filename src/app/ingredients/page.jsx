@@ -7,8 +7,11 @@ import { Button, DataTable, FilterPanel } from '@/components/ui';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import PageContainer from '@/components/ui/PageContainer';
 import ProtectedRoute from "@/components/ProtectedRoute";
+import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
 
 export default function IngredientsPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [ingredients, setIngredients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -139,51 +142,64 @@ export default function IngredientsPage() {
   });
 
   return (
-    <ProtectedRoute>
-      {loading ? (
-        <div className="p-6">로딩 중...</div>
-      ) : (
-        <PageContainer 
-          title="식재료 관리"
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        >
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">식재료 관리</h1>
-            <Button onClick={() => {
-              router.push('/ingredients/add');
-            }}>
-              <Plus className="w-4 h-4 mr-2" />
-              식재료 추가
-            </Button>
-          </div>
-
-          <FilterPanel
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            searchPlaceholder="식재료명 검색..."
-            filters={[
-              {
-                label: '카테고리',
-                value: categoryFilter,
-                onChange: setCategoryFilter,
-                options: [
-                  { value: 'ALL', label: '전체' },
-                  ...categories.map(cat => ({ value: cat, label: cat }))
-                ]
-              }
-            ]}
+    <ProtectedRoute requireAdmin={true}>
+      <div className="min-h-screen bg-[#e2e9ef]">
+        <Header onMenuClick={() => setSidebarOpen(true)} />
+        
+        <div className="flex">
+          <Sidebar 
+            isOpen={sidebarOpen} 
+            onClose={() => setSidebarOpen(false)} 
           />
+          
+          <main className="flex-1 p-6">
+            {loading ? (
+              <div className="p-6">로딩 중...</div>
+            ) : (
+              <PageContainer 
+                title="식재료 관리"
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h1 className="text-2xl font-bold">식재료 관리</h1>
+                  <Button onClick={() => {
+                    router.push('/ingredients/add');
+                  }}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    식재료 추가
+                  </Button>
+                </div>
 
-          <DataTable
-            data={paginatedData}
-            columns={columns}
-            renderRow={renderRow}
-            searchTerm={searchTerm}
-          />
-        </PageContainer>
-      )}
+                <FilterPanel
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  searchPlaceholder="식재료명 검색..."
+                  filters={[
+                    {
+                      label: '카테고리',
+                      value: categoryFilter,
+                      onChange: setCategoryFilter,
+                      options: [
+                        { value: 'ALL', label: '전체' },
+                        ...categories.map(cat => ({ value: cat, label: cat }))
+                      ]
+                    }
+                  ]}
+                />
+
+                <DataTable
+                  data={paginatedData}
+                  columns={columns}
+                  renderRow={renderRow}
+                  searchTerm={searchTerm}
+                />
+              </PageContainer>
+            )}
+          </main>
+        </div>
+      </div>
     </ProtectedRoute> 
   );
 }

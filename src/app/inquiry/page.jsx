@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { DataTable, FilterPanel } from "@/components/ui";
 import { inquiryAPI } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 const categoryOptions = [
   { value: "", label: "전체" },
@@ -70,6 +73,7 @@ function getCategoryLabel(category) {
 }
 
 export default function InquiryPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filters, setFilters] = useState({ category: "", author: "", status: "", sortOrder: "latest" });
   const [inquiryList, setInquiryList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -145,39 +149,52 @@ export default function InquiryPage() {
   };
 
   return (
-    <div className="p-6">
-      <div className="bg-white rounded-lg shadow-sm">
-        <div className="p-6">
-          <h2 className="text-xl font-semibold text-[#000000] mb-6">문의사항</h2>
-          <FilterPanel filters={filterConfig} values={filters} onChange={handleFilterChange} />
-          <DataTable
-            columns={columns}
-            data={pagedData}
-            onRowAction={handleRowAction}
-            loading={isLoading}
-            error={error}
+    <ProtectedRoute requireAdmin={true}>
+      <div className="min-h-screen bg-[#e2e9ef]">
+        <Header onMenuClick={() => setSidebarOpen(true)} />
+        
+        <div className="flex">
+          <Sidebar 
+            isOpen={sidebarOpen} 
+            onClose={() => setSidebarOpen(false)} 
           />
-          <div className="flex justify-center mt-6">
-            <button
-              className="p-2 text-[#979797] hover:text-[#404040] transition-colors disabled:opacity-50"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage <= 1}
-            >
-              이전
-            </button>
-            <span className="mx-4 text-[#404040] text-sm">
-              {currentPage} / {totalPages}
-            </span>
-            <button
-              className="p-2 text-[#979797] hover:text-[#404040] transition-colors disabled:opacity-50"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage >= totalPages}
-            >
-              다음
-            </button>
-          </div>
+          
+          <main className="flex-1 p-6">
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="p-6">
+                <h2 className="text-xl font-semibold text-[#000000] mb-6">문의사항</h2>
+                <FilterPanel filters={filterConfig} values={filters} onChange={handleFilterChange} />
+                <DataTable
+                  columns={columns}
+                  data={pagedData}
+                  onRowAction={handleRowAction}
+                  loading={isLoading}
+                  error={error}
+                />
+                <div className="flex justify-center mt-6">
+                  <button
+                    className="p-2 text-[#979797] hover:text-[#404040] transition-colors disabled:opacity-50"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                  >
+                    이전
+                  </button>
+                  <span className="mx-4 text-[#404040] text-sm">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    className="p-2 text-[#979797] hover:text-[#404040] transition-colors disabled:opacity-50"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage >= totalPages}
+                  >
+                    다음
+                  </button>
+                </div>
+              </div>
+            </div>
+          </main>
         </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 } 
