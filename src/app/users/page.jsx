@@ -43,7 +43,7 @@ export default function UsersPage() {
         
         //백엔드 API 호출
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin`, {
-          headers: getAuthHeaders(), // ← 인증 헤더 추가
+          headers: getAuthHeaders(), //
         });
         
         if (!response.ok) {

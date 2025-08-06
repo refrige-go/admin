@@ -34,7 +34,7 @@ export function MemberTable({ members = [], onViewDetail = () => {} }) {
             <TableCell className="py-3 px-4">
               <Button 
                 size="sm" 
-                className="bg-[#404040] hover:bg-[#404040]/90 text-white rounded-full px-4"
+                className="bg-[#f9bf52] hover:bg-[#e6a94a] text-[#2d1b0a] rounded-full px-4"
                 onClick={() => onViewDetail(member)}
               >
                 자세히

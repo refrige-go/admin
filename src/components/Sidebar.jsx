@@ -111,8 +111,8 @@ function Sidebar({ isOpen = false, onClose = () => { } }) {
           {/* 관리자 프로필 */}
           {!collapsed && (
             <div className="mb-6">
-              <div className="flex items-center gap-3 p-3 bg-[#f5f5f5] rounded-lg">
-                <div className="w-10 h-10 bg-[#0078d2] rounded-full flex items-center justify-center">
+              <div className="flex items-center gap-3 p-3 bg-[#fef7e6] rounded-lg border border-[#f9bf52]/20">
+                <div className="w-10 h-10 bg-[#f9bf52] rounded-full flex items-center justify-center">
                   <span className="text-white font-medium">A</span>
                 </div>
                 <span className="text-[#bfc5c8] font-medium">Admin</span>
@@ -133,8 +133,8 @@ function Sidebar({ isOpen = false, onClose = () => { } }) {
                   className={classNames(
                     'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors',
                     isActive
-                      ? 'bg-[#0078d2] text-white'
-                      : 'text-[#bfc5c8] hover:bg-[#f5f5f5]',
+                      ? 'bg-[#f9bf52] text-[#2d1b0a] shadow-sm'
+                      : 'text-[#6b5b47] hover:bg-[#fef7e6] hover:text-[#2d1b0a]',
                     collapsed && 'justify-center'
                   )}
                   onClick={() => setSelectedNav(item.key)}

@@ -167,11 +167,11 @@ export default function UserDetailPage() {
               <>
                 {!user.deleted ? (
                   <>
-                    <Button onClick={handleEdit}>
+                    <Button onClick={handleEdit} className="bg-[#f9bf52] text-[#2d1b0a] hover:bg-[#e6a94a]">
                       <Edit className="w-4 h-4 mr-2" />
                       수정
                     </Button>
-                    <Button variant="destructive" onClick={handleDelete}>
+                    <Button variant="destructive" onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
                       <Trash2 className="w-4 h-4 mr-2" />
                       삭제
                     </Button>
@@ -183,17 +183,17 @@ export default function UserDetailPage() {
             ) : (
               // 수정 모드
               <>
-                <Button onClick={handleSave}>
+                <Button onClick={handleSave} className="bg-[#f9bf52] text-[#2d1b0a] hover:bg-[#e6a94a]">
                   <Save className="w-4 h-4 mr-2" />
                   저장
                 </Button>
-                <Button variant="outline" onClick={handleCancel}>
+                <Button variant="outline" onClick={handleCancel} className="border-[#f9bf52] text-[#2d1b0a] hover:bg-[#f9bf52]">
                   <X className="w-4 h-4 mr-2" />
                   취소
                 </Button>
               </>
             )}
-            <Button variant="outline" onClick={() => router.back()}>
+            <Button variant="outline" onClick={() => router.back()} className="border-[#f9bf52] text-[#2d1b0a] hover:bg-[#f9bf52]">
               <ArrowLeft className="w-4 h-4 mr-2" />
               뒤로가기
             </Button>
